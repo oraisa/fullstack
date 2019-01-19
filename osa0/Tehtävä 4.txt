@@ -1,0 +1,24 @@
+title Tehtävä 4
+
+selain->palvelin: HTTP POST https://fullstack-exampleapp.herokuapp.com/new_note
+note over palvelin:
+palvelin tallentaa saadun muistiinpanon
+end note
+palvelin->selain: Uudelleenohjaus sivulle /notes
+selain->palvelin: HTTP GET https://fullstack-exampleapp.herokuapp.com/notes
+palvelin->selain: HTML-koodi
+selain->palvelin: HTTP GET https://fullstack-exampleapp.herokuapp.com/main.css
+palvelin->selain: main.css
+selain->palvelin: HTTP GET https://fullstack-exampleapp.herokuapp.com/main.js
+palvelin->selain: main.js
+note over selain:
+selain suorittaa main.js tiedoston koodin ja 
+hakee muistiinpanot palvelimelta
+end note
+selain->palvelin: HTTP GET https://fullstack-exampleapp.herokuapp.com/data.json
+palvelin->selain: muistiinpanot sisältävä JSON
+note over selain:
+selaimen suorittama javascript-koodi 
+piirtää selaimen palauttamat muistiinpanot
+(ml. käyttäjän juuri tallentama muistiinpano)
+end note

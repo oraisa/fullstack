@@ -1,0 +1,11 @@
+title Tehtävä 6
+
+note over selain:
+selain piirtää uuden muistiinpanon ja 
+lähettää sen palvelimelle
+end note
+selain->palvelin: https://fullstack-exampleapp.herokuapp.com/new_note_spa
+note over palvelin:
+palvelin tallentaa muistiinpanon
+end note
+palvelin->selain: 201 Created
