@@ -37,7 +37,7 @@ const App = () => {
                     setNewName("")
                     setNewNumber("")
                     displayNotification(`${createdPerson.name} lisätty`)
-                })
+                }).catch(error => displayError(error.response.data.error))
             } else {
                 replaceNumber(persons[personIndex], newNumber)
             }
