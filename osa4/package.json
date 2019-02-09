@@ -6,7 +6,7 @@
     "scripts": {
         "start": "node index.js",
         "watch": "nodemon index.js",
-        "test": "echo \"Error: no test specified\" && exit 1",
+        "test": "jest --verbose",
         "lint": "eslint ."
     },
     "author": "Ossi Räisä",
@@ -22,5 +22,8 @@
     "devDependencies": {
         "eslint": "^5.13.0",
         "nodemon": "^1.18.9"
+    },
+    "jest": {
+        "testEnvironment": "node"
     }
 }
