@@ -2,13 +2,37 @@ const mongoose = require("mongoose")
 const supertest = require("supertest")
 const app = require("../app")
 const Blog = require("../models/blog")
+const User = require("../models/user")
 const blogLists = require("./blog_lists")
+const helper = require("./helper")
+const jwt = require("jsonwebtoken")
 
 const api = supertest(app)
 
+let tokenWithBlogs = ""
+let tokenWithoutBlogs = ""
+
 beforeEach(async () => {
-    await Blog.remove({})
-    await Promise.all(blogLists.biggerList.map(blog => new Blog(blog).save()))
+    await User.deleteMany({})
+    const user1 = new User({ username: "root", passwordHash: "sekret" })
+    await user1.save()
+    const user2 = new User({ username: "admin", passwordHash: "sekret" })
+    await user2.save()
+
+    const users = await helper.usersInDb()
+
+    await Blog.deleteMany({})
+    await Promise.all(blogLists.biggerList.map(blog => new Blog({
+        ...blog,
+        user: users[0].id
+    }).save()))
+
+    const userForToken = {
+        username: users[0].username,
+        id: users[0].id,
+    }
+    tokenWithBlogs = `Bearer ${jwt.sign(userForToken, process.env.SECRET)}`
+    tokenWithoutBlogs = `Bearer ${jwt.sign({ username: users[1].username, id: users[1].id }, process.env.SECRET)}`
 })
 
 describe("getting blogs", () => {
@@ -45,6 +69,7 @@ describe("adding a blog", () => {
             likes: 0
         }
         await api.post("/api/blogs")
+            .set("Authorization", tokenWithBlogs)
             .send(newBlog)
             .expect(201)
             .expect("Content-Type", /application\/json/)
@@ -62,6 +87,7 @@ describe("adding a blog", () => {
             url: "localhost",
         }
         await api.post("/api/blogs")
+            .set({ Authorization: tokenWithBlogs })
             .send(newBlog)
             .expect(201)
             .expect("Content-Type", /application\/json/)
@@ -79,7 +105,10 @@ describe("adding a blog", () => {
             author: "Node.js",
             url: "localhost",
         }
-        await api.post("/api/blogs").send(newBlog).expect(400)
+        await api.post("/api/blogs")
+            .set({ Authorization: tokenWithBlogs })
+            .send(newBlog)
+            .expect(400)
         const response = await api.get("/api/blogs")
         expect(response.body.length).toBe(blogLists.biggerList.length)
     })
@@ -89,7 +118,10 @@ describe("adding a blog", () => {
             title: "Hello new Blog",
             author: "Node.js",
         }
-        await api.post("/api/blogs").send(newBlog).expect(400)
+        await api.post("/api/blogs")
+            .set({ Authorization: tokenWithBlogs })
+            .send(newBlog)
+            .expect(400)
         const response = await api.get("/api/blogs")
         expect(response.body.length).toBe(blogLists.biggerList.length)
     })
@@ -99,11 +131,23 @@ describe("deleting a blog", () => {
     test("blogs can be deleted", async () => {
         const response = await api.get("/api/blogs")
         const blogToDelete = response.body[0]
-        await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204)
+        await api.delete(`/api/blogs/${blogToDelete.id}`)
+            .set({ Authorization: tokenWithBlogs })
+            .expect(204)
         const responseAfterDelete = await api.get("/api/blogs")
         const titles = responseAfterDelete.body.map(blog => blog.title)
         expect(responseAfterDelete.body.length).toBe(response.body.length - 1)
         expect(titles).not.toContain(blogToDelete.title)
+    })
+
+    test("user cannot delete other blogs", async () => {
+        const response = await api.get("/api/blogs")
+        const blogToDelete = response.body[0]
+        await api.delete(`/api/blogs/${blogToDelete.id}`)
+            .set({ Authorization: tokenWithoutBlogs })
+            .expect(401)
+        const responseAfterDelete = await api.get("/api/blogs")
+        expect(responseAfterDelete.body.length).toBe(response.body.length)
     })
 })
 
@@ -114,7 +158,10 @@ describe("updating a blog", () => {
         const updatedBlog = {
             likes: blogToUpdate.likes + 3
         }
-        await api.put(`/api/blogs/${blogToUpdate.id}`).send(updatedBlog).expect(200)
+        await api.put(`/api/blogs/${blogToUpdate.id}`)
+            .set({ Authorization: tokenWithBlogs })
+            .send(updatedBlog)
+            .expect(200)
         const responseAfterUpdate = await api.get("/api/blogs")
         const likesAfterUpdate = responseAfterUpdate.body.find(blog => blog.id === blogToUpdate.id).likes
         expect(likesAfterUpdate).toBe(blogToUpdate.likes + 3)
