@@ -7,7 +7,7 @@ const morgan = require("morgan")
 const express = require("express")
 const app = express()
 const blogRouter = require("./controllers/blog")
-const errorHandler = require("./utils/errorHandler")
+const errorHandler = require("./utils/error_handler")
 
 const mongoUrl = config.MONGODB_URI
 console.log("Connecting to DB")
