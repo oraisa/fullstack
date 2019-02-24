@@ -19,7 +19,8 @@ describe("<App />", () => {
         const user = {
             username: "matti",
             name: "Matti",
-            token: "1234"
+            token: "1234",
+            id: "5"
         }
         window.localStorage.setItem("loggedInBlogUser", JSON.stringify(user))
         const component = render(

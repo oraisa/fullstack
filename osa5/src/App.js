@@ -84,6 +84,27 @@ const App = () => {
         }
     }
 
+    const handleLikeBlog = async (blogToLike) => {
+        try{
+            const updatedBlog = await blogService.like(blogToLike)
+            setBlogs(blogs.map(blog => blog.id === blogToLike.id ? updatedBlog : blog))
+            displayNotification(`${updatedBlog.title} liked`)
+        } catch(error){
+            displayError(error.response.data.error)
+            console.log("Error liking blog", error)
+        }
+    }
+
+    const handleDeleteBlog = async (blogToDelete) => {
+        try{
+            await blogService.deleteBlog(blogToDelete)
+            setBlogs(blogs.filter(blog => blog.id !== blogToDelete.id))
+            displayNotification(`${blogToDelete.title} deleted`)
+        } catch(error){
+            displayError(error.response.data.error)
+            console.log("Error deleting blog", error)
+        }
+    }
     if(user === null){
         return <div>
             <Notification message={errorString} notificationClass="error"/>
@@ -115,18 +136,30 @@ const App = () => {
                     <button onClick={() => setCreateBlogVisible(false)}>Cancel</button>
                 </div>
                 <h2>Existing blogs</h2>
-                <Blogs blogs={blogs} />
+                <Blogs
+                    blogs={blogs} user={user}
+                    handleLikeBlog={handleLikeBlog}
+                    handleDeleteBlog={handleDeleteBlog}
+                />
             </div>
         )
     }
 }
 
-const Blogs = ({ blogs }) => (
-    <div>
-        {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} />
-        )}
-    </div>
-)
+const Blogs = ({blogs, handleLikeBlog, handleDeleteBlog, user}) => {
+    const sortedBlogs = blogs.slice().sort((a, b) => b.likes - a.likes)
+    return (
+        <div>
+            {sortedBlogs.map(blog =>
+                <Blog
+                    key={blog.id} blog={blog}
+                    handleLike={() => handleLikeBlog(blog)}
+                    handleDelete={() => handleDeleteBlog(blog)}
+                    showRemove={user.id === blog.user.id}
+                />
+            )}
+        </div>
+    )
+}
 
 export default App
