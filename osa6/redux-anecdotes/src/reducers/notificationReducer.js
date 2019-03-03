@@ -7,9 +7,12 @@ const reducer = (state = "", action) => {
     }
 }
 
-export const notify = message => ({
-    type: "NOTIFY",
-    notification: message
-})
+export const notify = (message, time) => dispatch => {
+    setTimeout(() => { dispatch({type: "NOTIFY", notification: ""}) }, time * 1000)
+    dispatch({
+        type: "NOTIFY",
+        notification: message
+    })
+}
 
 export default reducer
