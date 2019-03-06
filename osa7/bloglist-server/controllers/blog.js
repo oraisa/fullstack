@@ -77,4 +77,22 @@ blogRouter.put("/:id", async (request, response, next) => {
     }
 })
 
+blogRouter.post("/:id/comments", async (request, response, next) => {
+    const comment = request.body.comment
+    try{
+        const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, {
+            $push: { comments: comment }
+        }, { new: true, runValidators: true })
+        if(!updatedBlog){
+            return response.status(404).end()
+        }
+        const user = await User.findById(updatedBlog.user)
+        response.status(201).json({ ...updatedBlog.toJSON(), user: {
+            username: user.username, name: user.name, id: user.id
+        } })
+    } catch(error){
+        next(error)
+    }
+})
+
 module.exports = blogRouter

@@ -11,14 +11,16 @@
     "react-router-dom": "^4.3.1",
     "react-scripts": "^2.1.5",
     "redux": "^4.0.1",
-    "redux-thunk": "^2.3.0"
+    "redux-thunk": "^2.3.0",
+    "semantic-ui-react": "^0.85.0"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "cypress:open": "cypress open"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -31,6 +33,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "cypress": "^3.1.5",
     "eslint-plugin-jest": "^22.3.0",
     "jest-dom": "^3.1.2",
     "react-testing-library": "^6.0.0"

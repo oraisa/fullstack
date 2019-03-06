@@ -3,14 +3,15 @@ import { connect } from "react-redux"
 import { Link } from "react-router-dom"
 import { logout } from "../reducers/loginReducer"
 
-const NavBar = ({user, logout}) => (
-    <div>
-        <Link to="/users">users</Link>
-        <Link to="/">blogs</Link>
+const NavBar = ({user, logout}) => {
+    const padding = { margin: 3 }
+    return <div>
+        <Link style={padding} to="/users">users</Link>
+        <Link style={padding} to="/">blogs</Link>
         {user.name} logged in
-        <button onClick={logout}>logout</button>
+        <button style={padding} onClick={logout}>logout</button>
     </div>
-)
+}
 
 const mapStateToProps = state => ({
     user: state.user

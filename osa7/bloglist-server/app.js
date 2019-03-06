@@ -30,6 +30,12 @@ if(process.env.NODE_ENV === "development"){
 }
 app.use(tokenExtractor)
 
+console.log(process.env.NODE_ENV)
+if(process.env.NODE_ENV === "test"){
+    const testRouter = require("./controllers/test")
+    app.use("/api/test", testRouter)
+}
+
 app.use("/api/blogs", blogRouter)
 app.use("/api/users", userRouter)
 app.use("/api/login", loginRouter)

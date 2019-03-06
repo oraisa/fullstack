@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react"
 import { useField } from "./hooks"
 import { connect } from "react-redux"
 import { BrowserRouter, Route } from "react-router-dom"
+import { Container } from "semantic-ui-react"
 import BlogList from "./components/BlogList"
 import Blog from "./components/Blog"
 import Notification from "./components/Notification"
@@ -9,6 +10,7 @@ import LoginForm from "./components/LoginForm"
 import NewBlogForm from "./components/NewBlogForm"
 import UserList from "./components/UserList"
 import User from "./components/User"
+import NavBar from "./components/NavBar"
 import { initBlogs, createBlog, likeBlog, deleteBlog } from "./reducers/blogReducer"
 import { notify, notifyError } from "./reducers/notificationReducer"
 import { login, logout, initUser } from "./reducers/loginReducer"
@@ -50,10 +52,6 @@ const App = (props) => {
         }
     }
 
-    const handleLogout = () => {
-        props.logout()
-    }
-
     const handleCreateBlog = async (event) => {
         event.preventDefault()
         try{
@@ -87,17 +85,20 @@ const App = (props) => {
         const hideWhenVisible = { display: createBlogVisible ? "none" : "" }
         return (
             <BrowserRouter>
-                <div>
+                <Container>
                     <Notification notificationClass="error"/>
                     <Notification notificationClass="notification"/>
+                    <NavBar />
                     <h2>Blogs</h2>
-                    <p>{props.user.name} logged in</p>
-                    <button onClick={handleLogout}>Logout</button>
                     <Route exact path="/" render={() =>
                         <div>
                             <h2>Create new blog</h2>
                             <div style={hideWhenVisible}>
-                                <button onClick={() => setCreateBlogVisible(true)}>Create</button>
+                                <button
+                                    id="showCreateBlog"
+                                    onClick={() => setCreateBlogVisible(true)}>
+                                    Create
+                                </button>
                             </div>
                             <div style={showWhenVisible}>
                                 <NewBlogForm
@@ -119,7 +120,7 @@ const App = (props) => {
                     <Route exact path="/blogs/:id" render={({match}) =>
                         <Blog blog={props.blogs.find(b => b.id === match.params.id)}/>
                     }/>
-                </div>
+                </Container>
             </BrowserRouter>
         )
     }

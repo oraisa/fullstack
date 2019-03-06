@@ -46,4 +46,12 @@ export const createBlog = (blog) => async dispatch => {
     })
 }
 
+export const commentBlog = (blog, comment) => async dispatch => {
+    const updatedBlog = await blogService.comment(blog, comment)
+    dispatch({
+        type: "UPDATE",
+        blog: updatedBlog
+    })
+}
+
 export default reducer

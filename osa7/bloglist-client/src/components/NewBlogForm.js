@@ -14,7 +14,7 @@ const NewBlogForm = ({title, author, url, createBlog}) => (
             <label htmlFor="url">Url: </label>
             <input id="url" {...url.input}/>
         </div>
-        <button type="submit">Create</button>
+        <button id="createBlog" type="submit">Create</button>
     </form>
 )
 
